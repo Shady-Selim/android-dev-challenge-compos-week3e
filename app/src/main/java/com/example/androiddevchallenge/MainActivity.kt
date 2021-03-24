@@ -57,79 +57,87 @@ fun MyApp(model: MainViewModel = MainViewModel()) {
     val context = LocalContext.current
     val contextResourses = context.resources
     val weather by model.getWeather(
-        "${contextResourses.getString(R.string.lat)},${
-            contextResourses.getString(
-                R.string.log
-            )
+        "${contextResourses.getString(R.string.latEg)}," +
+                "${contextResourses.getString(R.string.logEg)
         }"
     ).observeAsState()
     Surface(
-        color = MaterialTheme.colors.background, // todo: replace with video
+        color = MaterialTheme.colors.background,
         modifier = Modifier.fillMaxHeight()
     ) {
-        Card(
-            elevation = 4.dp,
-            modifier = Modifier
-                .padding(96.dp)
-                .fillMaxWidth()
-                .fillMaxHeight()
-        ) {
-            Row {
-                weather?.let {
-                    CoilImage(
-                        data = "https://darksky.net/images/weather-icons/${it.currently.icon}.png",
-                        contentDescription = "Weather icon status: ${it.currently.icon}",
-                        modifier = Modifier
-                            .width(128.dp)
-                            .height(128.dp)
-                    )
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
+        Box() {
+/*            Image(
+                painter = painterResource(R.raw.cloudy),
+                contentDescription = "Content description for visually impaired"
+            )*/
+            CoilImage( // todo: replace with video
+                data = "https://darksky.net/images/weather-icons/${weather?.currently?.icon}.png",
+                contentDescription = "Weather icon status: ${weather?.currently?.icon}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            )
+            Card(
+                elevation = 4.dp,
+                modifier = Modifier
+                    .padding(96.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                Row {
+                    weather?.let {
+                        CoilImage(
+                            data = "https://darksky.net/images/weather-icons/${it.currently.icon}.png",
+                            contentDescription = "Weather icon status: ${it.currently.icon}",
+                            modifier = Modifier
+                                .width(128.dp)
+                                .height(128.dp)
+                        )
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
 
-                        Text(
-                            text = it.timezone,
-                            style = typography.h5
-                        )
-                        Text(text = it.daily.summary)
-                        Text(text = it.currently.summary)
-                        Text(
-                            text = contextResourses.getString(
-                                R.string.high,
-                                ceil(it.daily.data[0].temperatureHigh).toInt().toString()
+                            Text(
+                                text = it.timezone,
+                                style = typography.h5
                             )
-                        )
-                        Text(
-                            text = contextResourses.getString(
-                                R.string.low,
-                                floor(it.daily.data[0].temperatureLow).toInt().toString()
+                            Text(text = it.daily.summary)
+                            Text(text = it.currently.summary)
+                            Text(
+                                text = contextResourses.getString(
+                                    R.string.high,
+                                    ceil(it.daily.data[0].temperatureHigh).toInt().toString()
+                                )
                             )
-                        )
+                            Text(
+                                text = contextResourses.getString(
+                                    R.string.low,
+                                    floor(it.daily.data[0].temperatureLow).toInt().toString()
+                                )
+                            )
 
+                        }
+                        Column {
+                            Text(
+                                text = contextResourses.getString(
+                                    R.string.temp,
+                                    it.currently.temperature.roundToInt().toString()
+                                ),
+                                style = typography.h3
+                            )
+                            Text(
+                                text = contextResourses.getString(
+                                    R.string.feels_like,
+                                    it.currently.apparentTemperature.roundToInt().toString()
+                                )
+                            )
+                        }
                     }
-                    Column {
-                        Text(
-                            text = contextResourses.getString(
-                                R.string.temp,
-                                it.currently.temperature.roundToInt().toString()
-                            ),
-                            style = typography.h3
-                        )
-                        Text(
-                            text = contextResourses.getString(
-                                R.string.feels_like,
-                                it.currently.apparentTemperature.roundToInt().toString()
-                            )
-                        )
-                    }
-
                 }
+
             }
-            /*Image(
-            painter = painterResource(R.drawable.your_drawable),
-            contentDescription = "Content description for visually impaired"
-        )*/
         }
+
     }
 }
 

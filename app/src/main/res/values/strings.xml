@@ -11,7 +11,9 @@
       -->
     <string name="app_name">AndroidDevChallenge</string>
     <string name="lat" translatable="false">59.337239</string>
+    <string name="latEg" translatable="false">29.848319</string>
     <string name="log" translatable="false">18.062381</string>
+    <string name="logEg" translatable="false">31.336853</string>
     <string name="current_weather_status_icon">Current Weather Status Icon</string>
     <string name="feels_like">Feels Like:%1$s°</string>
     <string name="low">Low:%1$s°</string>
