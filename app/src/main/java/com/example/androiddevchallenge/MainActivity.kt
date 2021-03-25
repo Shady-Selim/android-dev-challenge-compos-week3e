@@ -26,17 +26,32 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.androiddevchallenge.ui.main.MainViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
 import com.example.androiddevchallenge.ui.theme.typography
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
+import android.content.ContentResolver
+import android.content.Context
+import android.net.Uri
+import androidx.compose.ui.text.font.FontWeight
+import com.example.androiddevchallenge.ui.theme.transparentWhite
+import com.google.android.exoplayer2.Player
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,44 +72,38 @@ fun MyApp(model: MainViewModel = MainViewModel()) {
     val context = LocalContext.current
     val contextResourses = context.resources
     val weather by model.getWeather(
-        "${contextResourses.getString(R.string.latEg)}," +
-                "${contextResourses.getString(R.string.logEg)
-        }"
+        "${contextResourses.getString(R.string.latEg)},${contextResourses.getString(R.string.logEg)}"
     ).observeAsState()
     Surface(
         color = MaterialTheme.colors.background,
         modifier = Modifier.fillMaxHeight()
     ) {
-        Box() {
+        Box {
 /*            Image(
                 painter = painterResource(R.raw.cloudy),
                 contentDescription = "Content description for visually impaired"
             )*/
-            CoilImage( // todo: replace with video
-                data = "https://darksky.net/images/weather-icons/${weather?.currently?.icon}.png",
-                contentDescription = "Weather icon status: ${weather?.currently?.icon}",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-            )
+            VideoPlayer()
             Card(
-                elevation = 4.dp,
+                elevation = 0.dp,
                 modifier = Modifier
                     .padding(96.dp)
                     .fillMaxWidth()
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                backgroundColor = transparentWhite
             ) {
-                Row {
+                Row(modifier = Modifier.padding(0.dp, 16.dp)) {
                     weather?.let {
                         CoilImage(
                             data = "https://darksky.net/images/weather-icons/${it.currently.icon}.png",
                             contentDescription = "Weather icon status: ${it.currently.icon}",
                             modifier = Modifier
-                                .width(128.dp)
-                                .height(128.dp)
+                                .size(128.dp)
                         )
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier
+                                .padding(16.dp, 0.dp)
+                                .width(250.dp)
                         ) {
 
                             Text(
@@ -102,7 +111,7 @@ fun MyApp(model: MainViewModel = MainViewModel()) {
                                 style = typography.h5
                             )
                             Text(text = it.daily.summary)
-                            Text(text = it.currently.summary)
+                            Text(text = it.currently.summary, fontWeight = FontWeight.Bold)
                             Text(
                                 text = contextResourses.getString(
                                     R.string.high,
@@ -137,7 +146,6 @@ fun MyApp(model: MainViewModel = MainViewModel()) {
 
             }
         }
-
     }
 }
 
@@ -159,20 +167,22 @@ fun DarkPreview() {
 
 @Composable
 fun VideoPlayer() {
-    /*val context = LocalContext.current
-    val mov = getResource(context.resources.assets.locales[R.raw.cloudy])  //context.resources.assets.locales[context.resources.getIdentifier("cloudy", "raw", context.packageName)] // .assets.[R.raw.cloudy] // resources.getString() getResource.getStr (id = R.raw.cloudy)
-
+    val context = LocalContext.current
+    val mov = getUriFromRawFile(context, R.raw.sunny)
     val exoPlayer = remember(context) {
-        Builder(context).build().apply {
-            val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, context.packageName))
+        SimpleExoPlayer.Builder(context).build().apply {
+            val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
+                context,
+                Util.getUserAgent(context, context.packageName)
+            )
 
             val source = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(
-                    MediaItem.fromUri(mov)
+                    MediaItem.fromUri(mov!!) //"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                 )
             this.setMediaSource(source)
             this.prepare()
+            this.repeatMode = Player.REPEAT_MODE_ONE
             this.play()
         }
     }
@@ -181,7 +191,16 @@ fun VideoPlayer() {
         factory = { context ->
             PlayerView(context).apply {
                 player = exoPlayer
+                useController = false
             }
         }
-    )*/
+    )
+}
+
+fun getUriFromRawFile(context: Context, rawResourceId: Int): Uri? {
+    return Uri.Builder()
+        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+        .authority(context.getPackageName())
+        .path(rawResourceId.toString())
+        .build()
 }
