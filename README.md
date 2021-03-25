@@ -6,8 +6,8 @@ Shady Selim Jetpack Compose Weather App
 
 ## :scroll: Description
 Weather app created using Android Jetpack Compose for the #AndroidDevChallenge
-Using https://darksky.net/forecast/ API
-Using free weather movies and created small loops
+ - Using https://darksky.net/forecast/ API
+ - Using free weather movies and created small loops
 
 
 ## :bulb: Motivation and Context
