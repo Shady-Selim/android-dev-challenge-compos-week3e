@@ -1,8 +1,5 @@
-# Put title of your app here
-Shady Selim Jetpack Compose Weather App
-<!--- 
-![Workflow result] (https://github.com/Shady-Selim/android-dev-challenge-compose-week4/workflows/Check/badge.svg) -->
-
+# Shady Selim Jetpack Compose Weather App
+My participation in Android Developer Challenge Compose Week4
 
 ## :scroll: Description
 Weather app created using Android Jetpack Compose for the #AndroidDevChallenge
